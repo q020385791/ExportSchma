@@ -16,8 +16,19 @@ namespace ExportSchma
 
         private void btnExport_Click(object sender, EventArgs e)
         {
-            string connectionString = txtConnectionString.Text;
+            if ( string.IsNullOrEmpty(txtFileName.Text)||string.IsNullOrEmpty(txtRoute.Text)) 
+            {
+                MessageBox.Show("請輸入路徑與檔案名稱");
+                return ;
+            }
 
+            if (!Directory.Exists(txtRoute.Text))
+            {
+                MessageBox.Show("不合法路徑");
+                return ;
+            }
+
+            string connectionString = txtConnectionString.Text;
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 try
@@ -42,8 +53,9 @@ namespace ExportSchma
                         ExportToExcel(workbook, tableName, columnComments);
                     }
 
+                    var FullPath=Path.Combine(txtRoute.Text, txtFileName.Text + ".xlsx");
                     // Save the Excel file
-                    workbook.SaveAs("ColumnComments.xlsx");
+                    workbook.SaveAs(FullPath);
                     workbook.Close();
                     excelApp.Quit();
 
@@ -90,7 +102,7 @@ namespace ExportSchma
             // Add a new worksheet with the table name
             Worksheet worksheet = (Worksheet)workbook.Sheets.Add();
             worksheet.Name = tableName;
-            List<string> ColumnName = new List<string> { "欄位名稱","型別","長度","說明" };
+            List<string> ColumnName = new List<string> { "欄位名稱", "型別", "長度", "說明" };
             // Write column names to the Excel sheet
             for (int i = 0; i < dataTable.Columns.Count; i++)
             {
@@ -119,6 +131,19 @@ namespace ExportSchma
 
             // Release the used range object to avoid memory leaks
             Marshal.ReleaseComObject(usedRange);
+        }
+
+        private void btnRoute_Click(object sender, EventArgs e)
+        {
+            using (var folderDialog = new FolderBrowserDialog())
+            {
+                DialogResult result = folderDialog.ShowDialog();
+
+                if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(folderDialog.SelectedPath))
+                {
+                    txtRoute.Text = folderDialog.SelectedPath;
+                }
+            }
         }
     }
 }

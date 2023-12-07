@@ -31,6 +31,11 @@
             txtConnectionString = new TextBox();
             btnExport = new Button();
             label1 = new Label();
+            labOutput = new Label();
+            txtRoute = new TextBox();
+            btnRoute = new Button();
+            label2 = new Label();
+            txtFileName = new TextBox();
             SuspendLayout();
             // 
             // txtConnectionString
@@ -59,11 +64,58 @@
             label1.TabIndex = 2;
             label1.Text = "ConnectionString";
             // 
+            // labOutput
+            // 
+            labOutput.AutoSize = true;
+            labOutput.Location = new Point(15, 42);
+            labOutput.Name = "labOutput";
+            labOutput.Size = new Size(79, 15);
+            labOutput.TabIndex = 3;
+            labOutput.Text = "匯出檔案路徑";
+            // 
+            // txtRoute
+            // 
+            txtRoute.Location = new Point(93, 39);
+            txtRoute.Name = "txtRoute";
+            txtRoute.Size = new Size(265, 23);
+            txtRoute.TabIndex = 4;
+            // 
+            // btnRoute
+            // 
+            btnRoute.Location = new Point(364, 37);
+            btnRoute.Name = "btnRoute";
+            btnRoute.Size = new Size(75, 23);
+            btnRoute.TabIndex = 5;
+            btnRoute.Text = "檔案路徑";
+            btnRoute.UseVisualStyleBackColor = true;
+            btnRoute.Click += btnRoute_Click;
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new Point(16, 82);
+            label2.Name = "label2";
+            label2.Size = new Size(79, 15);
+            label2.TabIndex = 6;
+            label2.Text = "匯出檔案名稱";
+            // 
+            // txtFileName
+            // 
+            txtFileName.Location = new Point(94, 82);
+            txtFileName.Name = "txtFileName";
+            txtFileName.Size = new Size(117, 23);
+            txtFileName.TabIndex = 7;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(566, 71);
+            ClientSize = new Size(566, 128);
+            Controls.Add(txtFileName);
+            Controls.Add(label2);
+            Controls.Add(btnRoute);
+            Controls.Add(txtRoute);
+            Controls.Add(labOutput);
             Controls.Add(label1);
             Controls.Add(btnExport);
             Controls.Add(txtConnectionString);
@@ -78,5 +130,10 @@
         private TextBox txtConnectionString;
         private Button btnExport;
         private Label label1;
+        private Label labOutput;
+        private TextBox txtRoute;
+        private Button btnRoute;
+        private Label label2;
+        private TextBox txtFileName;
     }
 }
