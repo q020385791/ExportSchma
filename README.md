@@ -1,4 +1,4 @@
-#What is this?
+# What is this?
 It'a a tool for you to out put schma imformation to a excel file with name.type.length.description
 這是一個讓你簡單匯出資料庫欄位的工具
 
