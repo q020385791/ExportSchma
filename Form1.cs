@@ -45,7 +45,7 @@ namespace ExportSchma
                     foreach (DataRow tableRow in tableSchema.Rows)
                     {
                         string tableName = tableRow["TABLE_NAME"].ToString();
-
+                        tableName = TrimStringTo31Chars(tableName);
                         // Retrieve column comments for each table
                         DataTable columnComments = GetColumnComments(connection, tableName);
 
@@ -144,6 +144,20 @@ namespace ExportSchma
                     txtRoute.Text = folderDialog.SelectedPath;
                 }
             }
+        }
+
+        /// <summary>
+        /// Sheet只選擇至31字元
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public string TrimStringTo31Chars(string input)
+        {
+            if (input.Length > 31)
+            {
+                return input.Substring(0, 31);
+            }
+            return input;
         }
     }
 }

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ExportSchma")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1ffbf20935c0f0c364d6162ed14e35233c56941c")]
 [assembly: System.Reflection.AssemblyProductAttribute("ExportSchma")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ExportSchma")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
