@@ -16,62 +16,87 @@ namespace ExportSchma
 
         private void btnExport_Click(object sender, EventArgs e)
         {
-            if ( string.IsNullOrEmpty(txtFileName.Text)||string.IsNullOrEmpty(txtRoute.Text)) 
+            if (string.IsNullOrEmpty(txtFileName.Text) || string.IsNullOrEmpty(txtRoute.Text))
             {
                 MessageBox.Show("請輸入路徑與檔案名稱");
-                return ;
+                return;
             }
 
             if (!Directory.Exists(txtRoute.Text))
             {
                 MessageBox.Show("不合法路徑");
-                return ;
+                return;
             }
 
             string connectionString = txtConnectionString.Text;
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            Microsoft.Office.Interop.Excel.Application excelApp = null;
+            Workbook workbook = null;
+
+            try
             {
-                try
+                using (SqlConnection connection = new SqlConnection(connectionString))
                 {
-                    connection.Open();
-
-                    // Retrieve table names from the database
-                    DataTable tableSchema = connection.GetSchema("Tables");
-
-                    // Create Excel application
-                    Microsoft.Office.Interop.Excel.Application excelApp = new Microsoft.Office.Interop.Excel.Application();
-                    Workbook workbook = excelApp.Workbooks.Add();
-
-                    foreach (DataRow tableRow in tableSchema.Rows)
+                    try
                     {
-                        string tableName = tableRow["TABLE_NAME"].ToString();
-                        tableName = TrimStringTo31Chars(tableName);
-                        // Retrieve column comments for each table
-                        DataTable columnComments = GetColumnComments(connection, tableName);
+                        connection.Open();
+                        DataTable tableSchema = connection.GetSchema("Tables");
+                        (excelApp, workbook) = InitializeExcelApplication();
 
-                        // Export data to the current workbook
-                        ExportToExcel(workbook, tableName, columnComments);
+                        foreach (DataRow tableRow in tableSchema.Rows)
+                        {
+                            string tableName = tableRow["TABLE_NAME"].ToString();
+                            tableName = TrimStringTo31Chars(tableName);
+                            DataTable columnComments = GetColumnComments(connection, tableName);
+                            ExportToExcel(workbook, tableName, columnComments);
+                        }
+
+                        var FullPath = Path.Combine(txtRoute.Text, txtFileName.Text + ".xlsx");
+                        workbook.SaveAs(FullPath);
+
+                        MessageBox.Show("Data exported to Excel successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
-
-                    var FullPath=Path.Combine(txtRoute.Text, txtFileName.Text + ".xlsx");
-                    // Save the Excel file
-                    workbook.SaveAs(FullPath);
-                    workbook.Close();
-                    excelApp.Quit();
-
-                    MessageBox.Show("Data exported to Excel successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                catch (Exception ex)
-                {
-
-                    MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    finally
+                    {
+                        CleanupExcelResources(excelApp, workbook);
+                    }
                 }
             }
-
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
+        private (Microsoft.Office.Interop.Excel.Application, Workbook) InitializeExcelApplication()
+        {
+            var excelApp = new Microsoft.Office.Interop.Excel.Application
+            {
+                Visible = false, // 隱藏 Excel 應用程式
+                DisplayAlerts = false // 禁用警告訊息
+            };
 
-
+            Workbook workbook = excelApp.Workbooks.Add();
+            return (excelApp, workbook);
+        }
+        private void CleanupExcelResources(Microsoft.Office.Interop.Excel.Application excelApp, Workbook workbook)
+        {
+            if (workbook != null)
+            {
+                workbook.Close(false);
+                Marshal.ReleaseComObject(workbook);
+                workbook = null;
+            }
+            if (excelApp != null)
+            {
+                excelApp.Quit();
+                Marshal.ReleaseComObject(excelApp);
+                excelApp = null;
+            }
+            GC.Collect();
+        }
         private DataTable GetColumnComments(SqlConnection connection, string tableName)
         {
             string query = @"
@@ -153,11 +178,7 @@ namespace ExportSchma
         /// <returns></returns>
         public string TrimStringTo31Chars(string input)
         {
-            if (input.Length > 31)
-            {
-                return input.Substring(0, 31);
-            }
-            return input;
+            return input.Substring(0, Math.Min(31, input.Length));
         }
     }
 }
