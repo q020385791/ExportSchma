@@ -9,3 +9,5 @@ the file will display with name.type.length.description
 
 For example about connectionString
 "Server=YourServerName;Database=YourDatabaseName;User Id=UserName;Password=YourPassword;TrustServerCertificate=true;"
+
+最後更新日期：2024/11/07
